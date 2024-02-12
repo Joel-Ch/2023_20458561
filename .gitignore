@@ -2,6 +2,8 @@
 *.class
 *.dll
 *.exe
+*.exp
+*.lib
 *.o
 *.obj
 *.so
