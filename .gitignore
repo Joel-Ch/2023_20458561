@@ -3,5 +3,6 @@
 *.dll
 *.exe
 *.o
+*.obj
 *.so
 build/
