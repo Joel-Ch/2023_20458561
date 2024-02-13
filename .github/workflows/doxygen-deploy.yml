@@ -34,3 +34,5 @@ jobs:
           branch: gh-pages
           # The folder the action should deploy.
           folder: ${{ github.workspace }}/Worksheets/5/html
+          # The GitHub token
+          token: ${{ secrets.GITHUB_TOKEN }}
