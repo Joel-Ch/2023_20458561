@@ -33,4 +33,4 @@ jobs:
           # The branch the action should deploy to.
           branch: gh-pages
           # The folder the action should deploy.
-          folder: ${{ github.workspace }}/Worksheet5/html
+          folder: ${{ github.workspace }}/Worksheets/5/html
