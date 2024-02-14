@@ -1,5 +1,6 @@
 #include "dialog.h"
 #include "ui_dialog.h"
+//#include <QMessageBox>
 
 Dialog::Dialog(QWidget* parent)
 	: QDialog(parent)
@@ -79,4 +80,15 @@ void Dialog::updateColourDisplay()
 		.arg(red).arg(green).arg(blue);
 
 	ui->ColourDisplay->setStyleSheet(styleSheet);
+}
+
+
+void Dialog::accept() {
+	// Emit colorSelected signal with the selected color
+	QColor colour(ui->RedSlider->value(), ui->GreenSlider->value(), ui->BlueSlider->value());
+	QString name(ui->lineEdit->displayText());
+	bool visible(ui->checkBox->isChecked());
+	emit(sendingDialogData(name, visible, colour));
+	// Close the dialog
+	QDialog::accept();
 }

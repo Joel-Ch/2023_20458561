@@ -32,6 +32,9 @@ private slots:
     void on_actionOpen_File_triggered();
 
 private:
+    void receiveDialogData(const QString& name, const bool& visible, const QColor& colour);
+
+
     Ui::MainWindow *ui;
     ModelPartList* partList;
 };

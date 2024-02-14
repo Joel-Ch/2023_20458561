@@ -15,6 +15,9 @@ public:
     explicit Dialog(QWidget *parent = nullptr);
     ~Dialog();
 
+signals:
+    void sendingDialogData(const QString& name, const bool& visible, const QColor& colour);
+
 public slots:
     void handleTextInput();
     void handleRedSlider();
@@ -22,6 +25,7 @@ public slots:
     void handleBlueSlider();
     void handleVisibleCheck();
     void updateColourDisplay();
+    void accept() override;
 
 private:
     Ui::Dialog *ui;

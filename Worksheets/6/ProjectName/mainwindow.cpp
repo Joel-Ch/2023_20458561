@@ -1,6 +1,6 @@
 ﻿#include "mainwindow.h"
 #include "./ui_mainwindow.h"
-// #include <QMessageBox>
+#include <QMessageBox>
 #include <qfiledialog.h>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -63,11 +63,13 @@ void MainWindow::handleButton1()
 void MainWindow::handleButton2()
 {
     Dialog _dialog(this);
-    if (_dialog.exec() == QDialog::Accepted) {
+    connect(&_dialog, &Dialog::sendingDialogData, this, &MainWindow::receiveDialogData);
+    _dialog.exec();
+    /*if (_dialog.exec() == QDialog::Accepted) {
         emit statusUpdateMessage(QString("Dialog accepted"), 0);
     } else {
         emit statusUpdateMessage(QString("Dialog rejected"), 0);
-    }
+    }*/
 }
 
 void MainWindow::handleTreeClicked()
@@ -93,4 +95,15 @@ void MainWindow::on_actionOpen_File_triggered()
         "C:\\",
         tr("STL Files(*.stl);;Text Files(*.txt)"));
     emit statusUpdateMessage(QString("File Opened: ") + fileName,0);
+}
+
+
+// Implement receiveColor slot in MainWindow
+void MainWindow::receiveDialogData(const QString& name, const bool& visible, const QColor& colour) {
+    emit statusUpdateMessage(QString("Colour: R%1 G%2 B%3")
+        .arg(colour.red())
+        .arg(colour.green())
+        .arg(colour.blue()) + 
+        QString(" Name: ") + name + 
+        QString(" Visible? ") + QString::number(visible), 0);
 }
