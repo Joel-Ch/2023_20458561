@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // connections
     connect(this, &MainWindow::statusUpdateMessage, ui->statusbar, &QStatusBar::showMessage);
     connect(ui->pushButton, &QPushButton::released, this, &MainWindow::handleButton2);
     connect(ui->pushButton_2, &QPushButton::released, this, &MainWindow::handleButton1);
@@ -62,14 +64,14 @@ void MainWindow::handleButton1()
 
 void MainWindow::handleButton2()
 {
+    // Create a dialog object
     Dialog _dialog(this);
+
+    // Connect the dialog's signal to the MainWindow's slot
     connect(&_dialog, &Dialog::sendingDialogData, this, &MainWindow::receiveDialogData);
+
+    // Show the dialog
     _dialog.exec();
-    /*if (_dialog.exec() == QDialog::Accepted) {
-        emit statusUpdateMessage(QString("Dialog accepted"), 0);
-    } else {
-        emit statusUpdateMessage(QString("Dialog rejected"), 0);
-    }*/
 }
 
 void MainWindow::handleTreeClicked()
@@ -86,6 +88,7 @@ void MainWindow::handleTreeClicked()
     emit statusUpdateMessage(QString("The selected item is: ") + text, 0);
 }
 
+// Open a file dialog
 void MainWindow::on_actionOpen_File_triggered()
 {
     emit statusUpdateMessage(QString("Opening File: "),0);
@@ -98,8 +101,10 @@ void MainWindow::on_actionOpen_File_triggered()
 }
 
 
-// Implement receiveColor slot in MainWindow
+// Slot to receive the dialog data
 void MainWindow::receiveDialogData(const QString& name, const bool& visible, const QColor& colour) {
+
+    // for now we can just display the data in the status bar to show we have received it
     emit statusUpdateMessage(QString("Colour: R%1 G%2 B%3")
         .arg(colour.red())
         .arg(colour.green())
