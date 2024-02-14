@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "ModelPartList.h"
 #include "ModelPart.h"
+#include "dialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

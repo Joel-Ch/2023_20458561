@@ -1,6 +1,7 @@
 ﻿#include "mainwindow.h"
 #include "./ui_mainwindow.h"
 // #include <QMessageBox>
+#include <qfiledialog.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -61,8 +62,12 @@ void MainWindow::handleButton1()
 
 void MainWindow::handleButton2()
 {
-    // This causes MainWindow to emit the signal that will then be received by the statusbar’s slot
-    emit statusUpdateMessage(QString("Button 2 was clicked"), 0);
+    Dialog _dialog(this);
+    if (_dialog.exec() == QDialog::Accepted) {
+        emit statusUpdateMessage(QString("Dialog accepted"), 0);
+    } else {
+        emit statusUpdateMessage(QString("Dialog rejected"), 0);
+    }
 }
 
 void MainWindow::handleTreeClicked()
@@ -81,6 +86,11 @@ void MainWindow::handleTreeClicked()
 
 void MainWindow::on_actionOpen_File_triggered()
 {
-    emit statusUpdateMessage(QString("Open File Action Triggered"),0);
+    emit statusUpdateMessage(QString("Opening File: "),0);
+    QString fileName = QFileDialog::getOpenFileName(
+        this,
+        tr("Open File"),
+        "C:\\",
+        tr("STL Files(*.stl);;Text Files(*.txt)"));
+    emit statusUpdateMessage(QString("File Opened: ") + fileName,0);
 }
-
