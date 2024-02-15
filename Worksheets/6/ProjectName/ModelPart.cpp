@@ -94,6 +94,7 @@ int ModelPart::row() const {
 
 void ModelPart::setColour(QColor _colour) {
     colour = _colour;
+    set(2, colour);
 }
 
 QColor ModelPart::getColour()
@@ -104,6 +105,7 @@ QColor ModelPart::getColour()
 
 void ModelPart::setVisible(bool _isVisible) {
     isVisible = _isVisible;
+    set(1, isVisible);
 }
 
 bool ModelPart::visible() {
@@ -112,6 +114,7 @@ bool ModelPart::visible() {
 
 void ModelPart::setName(QString _name) {
 	partName = _name;
+    set(0, partName);
 }
 
 QString ModelPart::getName() {
