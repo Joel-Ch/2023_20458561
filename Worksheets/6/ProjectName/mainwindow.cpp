@@ -62,14 +62,28 @@ MainWindow::~MainWindow()
 
 void MainWindow::handleButton1()
 {
+    QModelIndex index = ui->treeView->currentIndex();
+    ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+    QString name = selectedPart->data(0).toString();
+    bool visible = selectedPart->data(1).toBool();
+    QString colour = selectedPart->data(2).toString();
+
+
+
     // This causes MainWindow to emit the signal that will then be received by the statusbar’s slot
-    emit statusUpdateMessage(QString("Button 1 was clicked"), 0);
+    emit statusUpdateMessage(name + QString::number(visible) + colour, 0);
 }
 
 void MainWindow::handleButton2()
 {
+    QModelIndex index = ui->treeView->currentIndex();
+    ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+    QString name = selectedPart->getName();
+    bool visible = selectedPart->visible();
+    QString colour = selectedPart->getColour().name();
+
     // This causes MainWindow to emit the signal that will then be received by the statusbar’s slot
-	emit statusUpdateMessage(QString("Button 2 was clicked"), 0);
+	emit statusUpdateMessage(name + QString::number(visible) + colour, 0);
 }
 
 void MainWindow::handleTreeClicked()
