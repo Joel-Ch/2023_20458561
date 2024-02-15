@@ -2,9 +2,6 @@
   *
   *     EEEE2076 - Software Engineering & VR Project
   *
-  *     Template for model parts that will be added as treeview items
-  *
-  *     P Evans 2022
   */
 
 #include "ModelPart.h"
@@ -95,47 +92,32 @@ int ModelPart::row() const {
     return 0;
 }
 
-void ModelPart::setColour(const unsigned char R, const unsigned char G, const unsigned char B) {
-    /* This is a placeholder function that will be used in the next worksheet */
-    
-    /* As the name suggests ... */
+void ModelPart::setColour(QColor _colour) {
+    colour = _colour;
 }
 
-unsigned char ModelPart::getColourR() {
-    /* This is a placeholder function that will be used in the next worksheet */
-    
-    /* As the name suggests ... */
-    return 0;   // needs updating
-}
-
-unsigned char ModelPart::getColourG() {
-    /* This is a placeholder function that will be used in the next worksheet */
-    
-    /* As the name suggests ... */
-    return 0;   // needs updating
+QColor ModelPart::getColour()
+{
+    return colour;
 }
 
 
-unsigned char ModelPart::getColourB() {
-    /* This is a placeholder function that will be used in the next worksheet */
-    
-    /* As the name suggests ... */
-    return 0;   // needs updating
-}
-
-
-void ModelPart::setVisible(bool isVisible) {
-    /* This is a placeholder function that will be used in the next worksheet */
-    
-    /* As the name suggests ... */
+void ModelPart::setVisible(bool _isVisible) {
+    isVisible = _isVisible;
 }
 
 bool ModelPart::visible() {
-    /* This is a placeholder function that will be used in the next worksheet */
-    
-    /* As the name suggests ... */
-    return false;
+    return isVisible;
 }
+
+void ModelPart::setName(QString _name) {
+	partName = _name;
+}
+
+QString ModelPart::getName() {
+	return partName;
+}
+
 
 void ModelPart::loadSTL( QString fileName ) {
     /* This is a placeholder function that will be used in the next worksheet */

@@ -32,9 +32,10 @@ MainWindow::MainWindow(QWidget *parent)
         /* Create strings for both data columns */
         QString name = QString("TopLevel %1").arg(i);
         QString visible("true");
+        QColor colour(255, 255, 255);
 
         /* Create child item */
-        ModelPart *childItem = new ModelPart({name, visible});
+        ModelPart *childItem = new ModelPart({name, visible, colour});
 
         /* Append to tree top-level */
         rootItem->appendChild(childItem);
@@ -44,8 +45,9 @@ MainWindow::MainWindow(QWidget *parent)
         {
             QString name = QString("Item %1, %2").arg(i).arg(j);
             QString visible("true");
+            QColor colour(255, 255, 255);
 
-            ModelPart *childChildItem = new ModelPart({name, visible});
+            ModelPart *childChildItem = new ModelPart({name, visible, colour});
 
             /* Append to parent */
             childItem->appendChild(childChildItem);
@@ -88,25 +90,39 @@ void MainWindow::handleTreeClicked()
 void MainWindow::on_actionOpen_File_triggered()
 {
     emit statusUpdateMessage(QString("Opening File: "),0);
+    // Open a file dialog
     QString fileName = QFileDialog::getOpenFileName(
         this,
         tr("Open File"),
         "C:\\",
         tr("STL Files(*.stl);;Text Files(*.txt)"));
+
     emit statusUpdateMessage(QString("File Opened: ") + fileName,0);
+    // Rename the selected item
+    QModelIndex index = ui->treeView->currentIndex();
+    ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+    selectedPart->setName(fileName);
+
 }
 
 
 // Slot to receive the dialog data
 void MainWindow::receiveDialogData(const QString& name, const bool& visible, const QColor& colour) {
 
-    // for now we can just display the data in the status bar to show we have received it
+    // Display the data in the status bar
     emit statusUpdateMessage(QString("Colour: R%1 G%2 B%3")
         .arg(colour.red())
         .arg(colour.green())
         .arg(colour.blue()) + 
         QString(" Name: ") + name + 
         QString(" Visible? ") + QString::number(visible), 0);
+
+    QModelIndex index = ui->treeView->currentIndex();
+    ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+    selectedPart->setName(name);
+    selectedPart->setVisible(visible);
+    selectedPart->setColour(colour);
+    
 }
 
 void MainWindow::on_actionItem_Options_triggered()
@@ -122,7 +138,7 @@ void MainWindow::on_actionItem_Options_triggered()
     ModelPart *selectedPart = static_cast<ModelPart*>(index.internalPointer());
 
     // Open the dialog with the selected item's data
-    openDialog(selectedPart->data(0).toString(), selectedPart->data(1).toBool(), QColor(255, 0, 0));
+    openDialog(selectedPart->getName(), selectedPart->visible(), selectedPart->getColour());
 
     // Reconnect the action's signal
     connect(ui->actionItem_Options, &QAction::triggered, this, &MainWindow::on_actionItem_Options_triggered);

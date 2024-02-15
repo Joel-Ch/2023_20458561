@@ -13,6 +13,8 @@
 #include <QString>
 #include <QList>
 #include <QVariant>
+#include <QColor>
+#include <QModelIndex>
 
 /* VTK headers - will be needed when VTK used in next worksheet,
  * commented out for now
@@ -30,7 +32,7 @@
 class ModelPart {
 public:
     /** Constructor
-     * @param data is a List (array) of strings for each property of this item (part name and visiblity in our case
+     * @param data is a List (array) of strings for each property of this item (part name, visiblity and colour in our case
      * @param parent is the parent of this item (one level up in tree)
      */
     ModelPart(const QList<QVariant>& data, ModelPart* parent = nullptr);
@@ -93,13 +95,14 @@ public:
 
 
     /** Set colour
-      * (0-255 RGB values as ints)
+      * @param _colour is the colour to set
       */
-    void setColour(const unsigned char R, const unsigned char G, const unsigned char B);
+    void setColour(QColor _colour);
 
-    unsigned char getColourR();
-    unsigned char getColourG();
-    unsigned char getColourB();
+    /** Get colour
+      * @return colour as QColor
+      */
+    QColor getColour();
 
     /** Set visible flag
       * @param isVisible sets visible/non-visible
@@ -110,6 +113,16 @@ public:
       * @return visible flag as boolean 
       */
     bool visible();
+
+    /** Set part name
+      * @param name is the name to set
+      */
+    void setName(QString name);
+
+    /** Get part name
+      * @return part name as QString
+      */
+    QString getName();
 	
 	/** Load STL file
       * @param fileName
@@ -135,6 +148,8 @@ private:
      * want to add you own.
      */
     bool                                        isVisible;          /**< True/false to indicate if should be visible in model rendering */
+    QColor 								        colour;             /**< Colour of part */
+    QString                                     partName;           /**< Name of part */
 	
 	/* These are vtk properties that will be used to load/render a model of this part,
 	 * commented out for now but will be used later
