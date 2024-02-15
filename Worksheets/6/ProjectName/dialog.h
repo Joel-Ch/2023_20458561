@@ -38,7 +38,7 @@ signals:
      * @param visible The visibility state.
      * @param colour The selected color.
      */
-    void sendingDialogData(const QString& name, const bool& visible, const QColor& colour);
+    void sendingData(const QString& name, const bool& visible, const QColor& colour);
 
 public slots:
     /**
@@ -60,6 +60,11 @@ public slots:
      * @brief Slot for updating the color display based on the slider values.
      */
     void updateColourDisplay();
+
+    /**
+     * @brief Slot for setting the initial values of the dialog.
+     */
+    void setInitialValues(const QString& name, const bool& visible, const QColor& colour);
 
     /**
      * @brief Overridden slot for accepting the dialog.

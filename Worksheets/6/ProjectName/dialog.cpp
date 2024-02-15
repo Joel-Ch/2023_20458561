@@ -1,6 +1,6 @@
 #include "dialog.h"
 #include "ui_dialog.h"
-//#include <QMessageBox>
+#include <QMessageBox>
 
 Dialog::Dialog(QWidget* parent)
 	: QDialog(parent)
@@ -25,9 +25,6 @@ Dialog::Dialog(QWidget* parent)
 	connect(ui->RedSlider, &QSlider::valueChanged, this, &Dialog::handleRedSlider);
 	connect(ui->GreenSlider, &QSlider::valueChanged, this, &Dialog::handleGreenSlider);
 	connect(ui->BlueSlider, &QSlider::valueChanged, this, &Dialog::handleBlueSlider);
-
-	// Set up the initial values
-	ui->checkBox->setCheckState(Qt::Checked);
 
 	updateColourDisplay();
 }
@@ -80,7 +77,22 @@ void Dialog::accept() {
 	bool visible(ui->checkBox->isChecked());
 
 	// send the data back to the main window
-	emit(sendingDialogData(name, visible, colour));
+	emit(sendingData(name, visible, colour));
+
 	// Close the dialog
 	QDialog::accept();
+}
+
+// Set the initial values of the dialog
+void Dialog::setInitialValues(const QString& name, const bool& visible, const QColor& colour)
+{
+	// Set the initial values
+	ui->checkBox->setCheckState(visible ? Qt::Checked : Qt::Unchecked);
+	ui->lineEdit->setText(name);
+	ui->RedSlider->setValue(colour.red());
+	handleRedSlider();
+	ui->GreenSlider->setValue(colour.green());
+	handleGreenSlider();
+	ui->BlueSlider->setValue(colour.blue());
+	handleBlueSlider();
 }

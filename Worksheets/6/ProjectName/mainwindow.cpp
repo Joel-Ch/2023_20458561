@@ -7,12 +7,14 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->treeView->addAction(ui->actionItem_Options);
 
     // connections
     connect(this, &MainWindow::statusUpdateMessage, ui->statusbar, &QStatusBar::showMessage);
     connect(ui->pushButton, &QPushButton::released, this, &MainWindow::handleButton2);
     connect(ui->pushButton_2, &QPushButton::released, this, &MainWindow::handleButton1);
     connect(ui->treeView, &QTreeView::clicked, this, &MainWindow::handleTreeClicked);
+    connect(ui->actionItem_Options, &QAction::triggered, this, &MainWindow::on_actionItem_Options_triggered);
 
     /* Create/allocate the ModelList */
     this->partList = new ModelPartList("Parts List");
@@ -64,14 +66,8 @@ void MainWindow::handleButton1()
 
 void MainWindow::handleButton2()
 {
-    // Create a dialog object
-    Dialog _dialog(this);
-
-    // Connect the dialog's signal to the MainWindow's slot
-    connect(&_dialog, &Dialog::sendingDialogData, this, &MainWindow::receiveDialogData);
-
-    // Show the dialog
-    _dialog.exec();
+    // This causes MainWindow to emit the signal that will then be received by the statusbar’s slot
+	emit statusUpdateMessage(QString("Button 2 was clicked"), 0);
 }
 
 void MainWindow::handleTreeClicked()
@@ -111,4 +107,41 @@ void MainWindow::receiveDialogData(const QString& name, const bool& visible, con
         .arg(colour.blue()) + 
         QString(" Name: ") + name + 
         QString(" Visible? ") + QString::number(visible), 0);
+}
+
+void MainWindow::on_actionItem_Options_triggered()
+{
+    // Disconnect the action's signal - otherwise it goes twice
+    disconnect(ui->actionItem_Options, &QAction::triggered, this, &MainWindow::on_actionItem_Options_triggered);
+
+    // Status Bar Message
+    emit statusUpdateMessage(QString("Item Options"),0);
+
+    // Get the selected item
+    QModelIndex index = ui->treeView->currentIndex();
+    ModelPart *selectedPart = static_cast<ModelPart*>(index.internalPointer());
+
+    // Open the dialog with the selected item's data
+    openDialog(selectedPart->data(0).toString(), selectedPart->data(1).toBool(), QColor(255, 0, 0));
+
+    // Reconnect the action's signal
+    connect(ui->actionItem_Options, &QAction::triggered, this, &MainWindow::on_actionItem_Options_triggered);
+}
+
+
+
+
+void MainWindow::openDialog(const QString& name, const bool& isVisible, const QColor& colour)
+{
+    // Create a dialog object
+    Dialog _dialog(this);
+
+    // Connect the dialog's signal to the MainWindow's slot
+    connect(&_dialog, &Dialog::sendingData, this, &MainWindow::receiveDialogData);
+
+    // Set the dialog's initial values
+    _dialog.setInitialValues(name, isVisible, colour);
+
+    // Show the dialog
+    _dialog.exec();
 }

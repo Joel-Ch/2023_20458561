@@ -54,12 +54,24 @@ signals:
      * @param timeout The timeout duration in milliseconds.
      */
     void statusUpdateMessage(const QString& message, int timeout);
+    /**
+     * @brief Signal emitted when the dialog data is ready to be sent.
+     * @param name The name sent back.
+     * @param visible The visibility state.
+     * @param colour The selected color.
+     */
+    void sendingDialogData(const QString& name, const bool& visible, const QColor& colour);
 
 private slots:
     /**
      * @brief Handles the actionOpen_File triggered event.
      */
     void on_actionOpen_File_triggered();
+
+    /**
+    * @brief Tree right click event.
+    */
+    void on_actionItem_Options_triggered();
 
 private:
     /**
@@ -69,6 +81,14 @@ private:
      * @param colour The color data.
      */
     void receiveDialogData(const QString& name, const bool& visible, const QColor& colour);
+
+    /**
+    * @brief Opens a dialog
+    * @param name The name data
+    * @param visible The visibility data
+    * @param colour The color data
+    */
+    void openDialog(const QString& name, const bool& visible, const QColor& colour);
 
     Ui::MainWindow *ui;
     ModelPartList* partList;
