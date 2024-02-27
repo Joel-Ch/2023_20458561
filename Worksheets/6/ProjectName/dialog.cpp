@@ -26,7 +26,9 @@ Dialog::Dialog(QWidget* parent)
 	connect(ui->GreenSlider, &QSlider::valueChanged, this, &Dialog::handleGreenSlider);
 	connect(ui->BlueSlider, &QSlider::valueChanged, this, &Dialog::handleBlueSlider);
 
-	updateColourDisplay();
+	connect(ui->ColourValue, &QLineEdit::textChanged, this, &Dialog::handleColourEntryBox);
+
+	updateColour();
 }
 
 Dialog::~Dialog()
@@ -34,40 +36,46 @@ Dialog::~Dialog()
     delete ui;
 }
 
+void Dialog::updateColour()
+{
+	ui->RedSlider->setValue(colour.red());
+	ui->RedLCD->display(colour.red());
+	ui->GreenLCD->display(colour.green());
+	ui->GreenSlider->setValue(colour.green());
+	ui->BlueLCD->display(colour.blue());
+	ui->BlueSlider->setValue(colour.blue());
+
+	ui->ColourValue->setText(colour.name());
+	ui->ColourDisplay->setStyleSheet(QString("QWidget{ background-color: %1; }").arg(colour.name()));
+}
+
 //3 functions to display slider values on lcd screens
 void Dialog::handleRedSlider()
 {
-	ui->RedLCD->display(ui->RedSlider->value());
-	updateColourDisplay();
+	colour.setRed(ui->RedSlider->value());
+	updateColour();
 }
 
 void Dialog::handleGreenSlider()
 {
-	ui->GreenLCD->display(ui->GreenSlider->value());
-	updateColourDisplay();
+	colour.setGreen(ui->GreenSlider->value());
+	updateColour();
 }
 
 void Dialog::handleBlueSlider()
 {
-	ui->BlueLCD->display(ui->BlueSlider->value());
-	updateColourDisplay();
+	colour.setBlue(ui->BlueSlider->value());
+	updateColour();
 }
 
-//changes the colour display after the sliders are moved
-void Dialog::updateColourDisplay()
+void Dialog::handleColourEntryBox()
 {
-	// Get the values from the sliders
-	int red = ui->RedSlider->value();
-	int green = ui->GreenSlider->value();
-	int blue = ui->BlueSlider->value();
-
-	// Set the background colour of the display widget
-	QString styleSheet = QString("QWidget{ background-color: rgb(%1, %2, %3); }")
-		.arg(red).arg(green).arg(blue);
-
-	ui->ColourDisplay->setStyleSheet(styleSheet);
+	QColor newColor(ui->ColourValue->text());
+	if (newColor.isValid()) {
+		colour = newColor;
+		updateColour();
+	}
 }
-
 
 // This runs after accepting the dialog box
 void Dialog::accept() {
@@ -84,15 +92,15 @@ void Dialog::accept() {
 }
 
 // Set the initial values of the dialog
-void Dialog::setInitialValues(const QString& name, const bool& visible, const QColor& colour)
+void Dialog::setInitialValues(const QString& _name, const bool& _visible, const QColor& _colour)
 {
+	// Set local variables
+	name = _name;
+	visible = _visible;
+	colour = _colour;
+
 	// Set the initial values
 	ui->checkBox->setCheckState(visible ? Qt::Checked : Qt::Unchecked);
 	ui->lineEdit->setText(name);
-	ui->RedSlider->setValue(colour.red());
-	handleRedSlider();
-	ui->GreenSlider->setValue(colour.green());
-	handleGreenSlider();
-	ui->BlueSlider->setValue(colour.blue());
-	handleBlueSlider();
+	updateColour();
 }

@@ -41,6 +41,7 @@ signals:
     void sendingData(const QString& name, const bool& visible, const QColor& colour);
 
 public slots:
+
     /**
      * @brief Slot for handling the red slider value change.
      */
@@ -57,9 +58,14 @@ public slots:
     void handleBlueSlider();
 
     /**
-     * @brief Slot for updating the color display based on the slider values.
+     * @brief Slot for handling the colour entry box value change.
      */
-    void updateColourDisplay();
+    void handleColourEntryBox();
+
+    /**
+     * @brief Slot for updating the color displays based on a colour change.
+     */
+    void updateColour();
 
     /**
      * @brief Slot for setting the initial values of the dialog.
@@ -73,6 +79,15 @@ public slots:
 
 private:
     Ui::Dialog *ui; /**< The user interface object for the dialog. */
+
+    QColor colour;
+    /**< The selected color. */
+
+    QString name;
+    /**< The name of the item. */
+
+    bool visible;
+    /**< The visibility state of the item. */
 };
 
 #endif // DIALOG_H
