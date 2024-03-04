@@ -251,7 +251,24 @@ void MainWindow::updateRenderFromTree(const QModelIndex& index) {
         /* Retrieve actor from selected part and add to renderer */
         vtkSmartPointer<vtkActor> actor = selectedPart->getActor();
         if (actor) {
-            renderer->AddActor(actor);
+
+            QColor qcolor = selectedPart->getColour();
+            double red = qcolor.redF();
+            double green = qcolor.greenF();
+            double blue = qcolor.blueF();
+
+            // Set the color of the actor
+            actor->GetProperty()->SetColor(red, green, blue);
+            
+            // Check visibility and add or remove actor from renderer
+            if (selectedPart->visible()) {
+                if (!renderer->HasViewProp(actor)) {
+                    renderer->AddActor(actor);
+                }
+            }
+            else {
+                renderer->RemoveActor(actor);
+            }
         }
     }
 
