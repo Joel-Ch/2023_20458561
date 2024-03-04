@@ -21,76 +21,70 @@ MainWindow::MainWindow(QWidget *parent)
     /* Link it to the tree view in the GUI */
     ui->treeView->setModel(this->partList);
 
-    /* Manually create a model tree - there are much better and more flexible ways of doing this,
-    e.g. with nested functions. This is just a quick example as a starting point. */
-    ModelPart *rootItem = this->partList->getRootItem();
-
-    /* Add 3 top level items */
-    for (int i = 0; i < 3; i++)
-    {
-        /* Create strings for both data columns */
-        QString name = QString("TopLevel %1").arg(i);
-        QString visible("true");
-        QColor colour(255, 255, 255);
-
-        /* Create child item */
-        ModelPart *childItem = new ModelPart({name, visible, colour});
-
-        /* Append to tree top-level */
-        rootItem->appendChild(childItem);
-
-        /* Add 5 sub-items */
-        for (int j = 0; j < 5; j++)
-        {
-            QString name = QString("Item %1, %2").arg(i).arg(j);
-            QString visible("true");
-            QColor colour(255, 255, 255);
-
-            ModelPart *childChildItem = new ModelPart({name, visible, colour});
-
-            /* Append to parent */
-            childItem->appendChild(childChildItem);
-        }
-    }
+    // Manually create a model tree - there are much better and more flexible ways of doing this, e.g. with nested functions. This is just a quick example as a starting point.
+    //ModelPart *rootItem = this->partList->getRootItem();
+    //  /* Add 3 top level items */
+    //for (int i = 0; i < 3; i++)
+    //{
+    //    /* Create strings for both data columns */
+    //    QString name = QString("TopLevel %1").arg(i);
+    //    QString name = QString("TopLevel");
+    //    QString visible("true");
+    //    QColor colour(255, 255, 255);
+    //    /* Create child item */
+    //    ModelPart *childItem = new ModelPart({name, visible, colour});
+    //    /* Append to tree top-level */
+    //    rootItem->appendChild(childItem);
+    //    /* Add 5 sub-items */
+    //    for (int j = 0; j < 5; j++)
+    //    {
+    //        QString name = QString("Item %1, %2").arg(i).arg(j);
+    //        QString visible("true");
+    //        QColor colour(255, 255, 255);
+    //        ModelPart *childChildItem = new ModelPart({name, visible, colour});
+    //        /* Append to parent */
+    //        childItem->appendChild(childChildItem);
+    //    }
+    //}
 
     /* Link a render window with the Qt widget */
     renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
     ui->vtkWidget->setRenderWindow(renderWindow);
 
-    /* Add a renderer */
+    ///* Add a renderer */
     renderer = vtkSmartPointer<vtkRenderer>::New();
     renderWindow->AddRenderer(renderer);
 
-    /* Create an object and add to renderer (this will change later to display a CAD model) */
-    /* Will just copy and paste cylinder example from before */
-    // This creates a polygonal cylinder model with eight circumferential facets
-    // (i.e., in practice an octagonal prism).
-    vtkNew<vtkCylinderSource> cylinder;
-    cylinder->SetResolution(8);
+    ///* Create an object and add to renderer (this will change later to display a CAD model) */
+    ///* Will just copy and paste cylinder example from before */
+    //// This creates a polygonal cylinder model with eight circumferential facets
+    //// (i.e., in practice an octagonal prism).
+    //vtkNew<vtkCylinderSource> cylinder;
+    //cylinder->SetResolution(8);
 
-    // The mapper is responsible for pushing the geometry into the graphics
-    // library. It may also do color mapping, if scalars or other attributes are
-    // defined.
-    vtkNew<vtkPolyDataMapper> cylinderMapper;
-    cylinderMapper->SetInputConnection(cylinder->GetOutputPort());
+    //// The mapper is responsible for pushing the geometry into the graphics
+    //// library. It may also do color mapping, if scalars or other attributes are
+    //// defined.
+    //vtkNew<vtkPolyDataMapper> cylinderMapper;
+    //cylinderMapper->SetInputConnection(cylinder->GetOutputPort());
 
-    // The actor is a grouping mechanism: besides the geometry (mapper), it
-    // also has a property, transformation matrix, and/or texture map.
-    // Here we set its color and rotate it around the X and Y axes.
-    vtkNew<vtkActor> cylinderActor;
-    cylinderActor->SetMapper(cylinderMapper);
-    cylinderActor->GetProperty()->SetColor(1., 0., 0.35);
-    cylinderActor->RotateX(30.0);
-    cylinderActor->RotateY(-45.0);
+    //// The actor is a grouping mechanism: besides the geometry (mapper), it
+    //// also has a property, transformation matrix, and/or texture map.
+    //// Here we set its color and rotate it around the X and Y axes.
+    //vtkNew<vtkActor> cylinderActor;
+    //cylinderActor->SetMapper(cylinderMapper);
+    //cylinderActor->GetProperty()->SetColor(1., 0., 0.35);
+    //cylinderActor->RotateX(30.0);
+    //cylinderActor->RotateY(-45.0);
 
-    renderer->AddActor(cylinderActor);
+    //renderer->AddActor(cylinderActor);
 
-    /* Reset Camera (probably needs to go in its own function that is called whenever
-    model is changed) */
-    renderer->ResetCamera();
-    renderer->GetActiveCamera()->Azimuth(30);
-    renderer->GetActiveCamera()->Elevation(30);
-    renderer->ResetCameraClippingRange();
+    ///* Reset Camera (probably needs to go in its own function that is called whenever
+    //model is changed) */
+    //renderer->ResetCamera();
+    //renderer->GetActiveCamera()->Azimuth(30);
+    //renderer->GetActiveCamera()->Elevation(30);
+    //renderer->ResetCameraClippingRange();
 }
 
 MainWindow::~MainWindow()
@@ -150,11 +144,33 @@ void MainWindow::on_actionOpen_File_triggered()
         tr("STL Files(*.stl);;Text Files(*.txt)"));
 
     emit statusUpdateMessage(QString("File Opened: ") + fileName,0);
-    // Rename the selected item
+    // Select an item in the tree view
     QModelIndex index = ui->treeView->currentIndex();
-    ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
-    selectedPart->setName(fileName);
+    ModelPart* selectedPart = nullptr;
+    if(ui->treeView->selectionModel()->hasSelection()) { // Check if an item is selected
+        selectedPart = static_cast<ModelPart*>(index.internalPointer());
+    }
+    QString visible("true");
+    QColor colour(255, 255, 255);
 
+    ModelPart* newItem = new ModelPart({ fileName, visible, colour });
+    if (selectedPart) { // Check if selectedPart is valid
+        // Append the new item to the selected item
+        selectedPart->appendChild(newItem);
+    }
+    else {
+    emit statusUpdateMessage(QString("Help"), 0);
+    // If no item is selected, create a new top-level item
+    QList<QVariant> data = { fileName, visible, colour };
+    QModelIndex parent; // An invalid QModelIndex
+    partList->appendChild(parent, data);
+}
+    // Update the tree view
+    partList->dataChanged(index, index);
+    // Load the STL file
+    newItem->loadSTL(fileName);
+
+    updateRender();
 }
 
 
@@ -175,6 +191,7 @@ void MainWindow::receiveDialogData(const QString& name, const bool& visible, con
     selectedPart->setVisible(visible);
     selectedPart->setColour(colour);
     
+    updateRender();
 }
 
 void MainWindow::on_actionItem_Options_triggered()
@@ -212,4 +229,40 @@ void MainWindow::openDialog(const QString& name, const bool& isVisible, const QC
 
     // Show the dialog
     _dialog.exec();
+}
+
+void MainWindow::updateRender() {
+    renderer->RemoveAllViewProps();
+    int rows = partList->rowCount(QModelIndex());
+    for (int i = 0; i < rows; i++) {
+        updateRenderFromTree(partList->index(i, 0, QModelIndex()));
+    }
+    // Reset Camera
+    renderer->ResetCamera();
+    renderer->GetActiveCamera()->Azimuth(30);
+    renderer->GetActiveCamera()->Elevation(30);
+    renderer->ResetCameraClippingRange();
+    renderer->Render();
+}
+
+void MainWindow::updateRenderFromTree(const QModelIndex& index) {
+    if (index.isValid()) {
+        ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+        /* Retrieve actor from selected part and add to renderer */
+        vtkSmartPointer<vtkActor> actor = selectedPart->getActor();
+        if (actor) {
+            renderer->AddActor(actor);
+        }
+    }
+
+    /* Check to see if this part has any children */
+    if (!partList->hasChildren(index) || (index.flags() & Qt::ItemNeverHasChildren)) {
+        return;
+    }
+
+    /* Loop through children and add their actors */
+    int rows = partList->rowCount(index);
+    for (int i = 0; i < rows; i++) {
+        updateRenderFromTree(partList->index(i, 0, index));
+    }
 }

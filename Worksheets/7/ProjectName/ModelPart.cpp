@@ -7,13 +7,6 @@
 #include "ModelPart.h"
 
 
-/* Commented out for now, will be uncommented later when you have
- * installed the VTK library
- */
-//#include <vtkSmartPointer.h>
-//#include <vtkDataSetMapper.h>
-
-
 
 ModelPart::ModelPart(const QList<QVariant>& data, ModelPart* parent )
     : m_itemData(data), m_parentItem(parent) {
@@ -92,55 +85,56 @@ int ModelPart::row() const {
     return 0;
 }
 
-void ModelPart::setColour(QColor _colour) {
-    colour = _colour;
-    set(2, colour);
+void ModelPart::setColour(const QColor& color) {
+    m_itemData[2] = color;
 }
 
-QColor ModelPart::getColour()
-{
-    return colour;
-}
-
-
-void ModelPart::setVisible(bool _isVisible) {
-    isVisible = _isVisible;
-    set(1, isVisible);
-}
-
-bool ModelPart::visible() {
-    return isVisible;
-}
-
-void ModelPart::setName(QString _name) {
-	partName = _name;
-    set(0, partName);
-}
-
-QString ModelPart::getName() {
-	return partName;
+QColor ModelPart::getColour() const {
+    return m_itemData.at(2).value<QColor>();
 }
 
 
-void ModelPart::loadSTL( QString fileName ) {
-    /* This is a placeholder function that will be used in the next worksheet */
-    
-    /* 1. Use the vtkSTLReader class to load the STL file 
-     *     https://vtk.org/doc/nightly/html/classvtkSTLReader.html
-     */
-
-    /* 2. Initialise the part's vtkMapper */
-    
-    /* 3. Initialise the part's vtkActor and link to the mapper */
+void ModelPart::setVisible(bool visibility) {
+    m_itemData[1] = visibility;
 }
 
-//vtkSmartPointer<vtkActor> ModelPart::getActor() {
+
+bool ModelPart::visible() const {
+    return m_itemData.at(1).value<bool>();
+}
+
+void ModelPart::setName(const QString& name) {
+    m_itemData[0] = name;
+}
+
+QString ModelPart::getName() const {
+    return m_itemData.at(0).value<QString>();
+}
+
+
+void ModelPart::loadSTL(QString fileName) {
+    // 1. Use the vtkSTLReader class to load the STL file
+    file = vtkSmartPointer<vtkSTLReader>::New();
+    file->SetFileName(fileName.toStdString().c_str());
+    file->Update();
+
+    // 2. Initialise the part's vtkMapper and link it to the STL reader
+    mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    mapper->SetInputConnection(file->GetOutputPort());
+
+    // 3. Initialise the part's vtkActor and link to the mapper
+    actor = vtkSmartPointer<vtkActor>::New();
+    actor->SetMapper(mapper);
+}
+
+vtkSmartPointer<vtkActor> ModelPart::getActor() const{
     /* This is a placeholder function that will be used in the next worksheet */
     
     /* Needs to return a smart pointer to the vtkActor to allow
      * part to be rendered.
      */
-//}
+    return actor;
+}
 
 //vtkActor* ModelPart::getNewActor() {
     /* This is a placeholder function that will be used in the next worksheet.

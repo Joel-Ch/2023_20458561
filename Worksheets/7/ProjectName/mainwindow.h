@@ -101,6 +101,17 @@ private:
     */
     void openDialog(const QString& name, const bool& visible, const QColor& colour);
 
+    /**
+    * @brief Updates the render window.
+    */
+    void updateRender();
+
+    /**
+    * @brief Updates the render window from the tree.
+    * @param index The index of the tree.
+    */
+    void updateRenderFromTree(const QModelIndex& index);
+
     vtkSmartPointer<vtkRenderer> renderer;
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow;
 

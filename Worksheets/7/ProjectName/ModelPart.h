@@ -15,6 +15,12 @@
 #include <QVariant>
 #include <QColor>
 #include <QModelIndex>
+#include <vtkSmartPointer.h>
+#include <vtkSTLReader.h>
+#include <vtkMapper.h>
+#include <vtkActor.h>
+#include <vtkColor.h>
+#include <vtkPolyDataMapper.h>
 
 /* VTK headers - will be needed when VTK used in next worksheet,
  * commented out for now
@@ -32,7 +38,7 @@
 class ModelPart {
 public:
     /** Constructor
-     * @param data is a List (array) of strings for each property of this item (part name, visiblity and colour in our case
+     * @param data is a List (array) of strings for each property of this item (part name, visiblity and colour in our case)
      * @param parent is the parent of this item (one level up in tree)
      */
     ModelPart(const QList<QVariant>& data, ModelPart* parent = nullptr);
@@ -94,15 +100,16 @@ public:
     int row() const;
 
 
+
     /** Set colour
       * @param _colour is the colour to set
       */
-    void setColour(QColor _colour);
+    void setColour(const QColor& color);
 
     /** Get colour
       * @return colour as QColor
       */
-    QColor getColour();
+    QColor getColour() const;
 
     /** Set visible flag
       * @param isVisible sets visible/non-visible
@@ -112,17 +119,18 @@ public:
     /** Get visible flag
       * @return visible flag as boolean 
       */
-    bool visible();
+    bool visible() const;
+
 
     /** Set part name
       * @param name is the name to set
       */
-    void setName(QString name);
+    void setName(const QString& name);
 
     /** Get part name
       * @return part name as QString
       */
-    QString getName();
+    QString getName() const;
 	
 	/** Load STL file
       * @param fileName
@@ -132,7 +140,7 @@ public:
     /** Return actor
       * @return pointer to default actor for GUI rendering
       */
-    //vtkSmartPointer<vtkActor> getActor();
+    vtkSmartPointer<vtkActor> getActor() const;
 
     /** Return new actor for use in VR
       * @return pointer to new actor
@@ -144,20 +152,19 @@ private:
     QList<QVariant>                             m_itemData;         /**< List (array of column data for item */
     ModelPart*                                  m_parentItem;       /**< Pointer to parent */
 
-    /* These are some typical properties that I think the part will need, you might
-     * want to add you own.
-     */
-    bool                                        isVisible;          /**< True/false to indicate if should be visible in model rendering */
-    QColor 								        colour;             /**< Colour of part */
-    QString                                     partName;           /**< Name of part */
+    /* These are some part properties */
+    /*NB: DO NOT USE THESE: m_itemData contains the data in the order name,visible, colour. DO NOT USE MULTIPLE VARIABLES FOR THE SAME INFORMATION*/
+
+    //bool                                        isVisible;          /**< True/false to indicate if should be visible in model rendering */
+    //QColor 								        QtColour;             /**< Colour of part */
+    //QString                                     partName;           /**< Name of part */
 	
-	/* These are vtk properties that will be used to load/render a model of this part,
-	 * commented out for now but will be used later
-	 */
-	//vtkSmartPointer<vtkSTLReader>               file;               /**< Datafile from which part loaded */
-    //vtkSmartPointer<vtkMapper>                  mapper;             /**< Mapper for rendering */
-    //vtkSmartPointer<vtkActor>                   actor;              /**< Actor for rendering */
-    //vtkColor3<unsigned char>                    colour;             /**< User defineable colour */
+	/* These are vtk properties that will be used to load/render a model of this part */
+
+	vtkSmartPointer<vtkSTLReader>               file;               /**< Datafile from which part loaded */
+    vtkSmartPointer<vtkMapper>                  mapper;             /**< Mapper for rendering */
+    vtkSmartPointer<vtkActor>                   actor;              /**< Actor for rendering */
+    vtkColor3<unsigned char>                    vtkColour;             /**< User defineable colour */
 };  
 
 
