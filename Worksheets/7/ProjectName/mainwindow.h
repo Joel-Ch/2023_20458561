@@ -80,9 +80,14 @@ private slots:
     void on_actionOpen_File_triggered();
 
     /**
-    * @brief Tree right click event.
+    * @brief Tree options event.
     */
     void on_actionItem_Options_triggered();
+
+    /**
+    * @brief Delete item event.
+    */
+    void on_actionDelete_Item_triggered();
 
 private:
     /**

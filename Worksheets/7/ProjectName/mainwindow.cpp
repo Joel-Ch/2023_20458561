@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->treeView->addAction(ui->actionItem_Options);
+    ui->treeView->addAction(ui->actionDelete_Item);
 
     // connections
     connect(this, &MainWindow::statusUpdateMessage, ui->statusbar, &QStatusBar::showMessage);
@@ -14,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_2, &QPushButton::released, this, &MainWindow::handleButton1);
     connect(ui->treeView, &QTreeView::clicked, this, &MainWindow::handleTreeClicked);
     connect(ui->actionItem_Options, &QAction::triggered, this, &MainWindow::on_actionItem_Options_triggered);
+    connect(ui->actionDelete_Item, &QAction::triggered, this, &MainWindow::on_actionDelete_Item_triggered);
 
     /* Create/allocate the ModelList */
     this->partList = new ModelPartList("Parts List");
@@ -132,7 +134,7 @@ void MainWindow::handleTreeClicked()
     emit statusUpdateMessage(QString("The selected item is: ") + text, 0);
 }
 
-// Open a file dialog
+
 void MainWindow::on_actionOpen_File_triggered()
 {
     emit statusUpdateMessage(QString("Opening File: "),0);
@@ -174,7 +176,6 @@ void MainWindow::on_actionOpen_File_triggered()
 }
 
 
-// Slot to receive the dialog data
 void MainWindow::receiveDialogData(const QString& name, const bool& visible, const QColor& colour) {
 
     // Display the data in the status bar
@@ -193,6 +194,7 @@ void MainWindow::receiveDialogData(const QString& name, const bool& visible, con
     
     updateRender();
 }
+
 
 void MainWindow::on_actionItem_Options_triggered()
 {
@@ -214,6 +216,26 @@ void MainWindow::on_actionItem_Options_triggered()
 }
 
 
+void MainWindow::on_actionDelete_Item_triggered()
+{
+    // Disconnect the action's signal - otherwise it goes twice
+    disconnect(ui->actionDelete_Item, &QAction::triggered, this, &MainWindow::on_actionDelete_Item_triggered);
+
+    // Status Bar Message
+    emit statusUpdateMessage(QString("Delete Item"), 0);
+
+    // Get the selected item
+    QModelIndex index = ui->treeView->currentIndex();
+    ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+
+    // Delete the selected item
+    if (index.isValid()) {
+    partList->removeRow(index.row(), index.parent());
+    }
+
+    // Reconnect the action's signal
+    connect(ui->actionDelete_Item, &QAction::triggered, this, &MainWindow::on_actionDelete_Item_triggered);
+}
 
 
 void MainWindow::openDialog(const QString& name, const bool& isVisible, const QColor& colour)
