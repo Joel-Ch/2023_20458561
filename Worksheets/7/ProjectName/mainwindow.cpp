@@ -1,7 +1,7 @@
 ﻿#include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-
+// Constructors Destructors etc
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -94,6 +94,8 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// -----------------------------------------------------------------------------------------------
+// Slots
 void MainWindow::handleButton1()
 {
     QModelIndex index = ui->treeView->currentIndex();
@@ -134,122 +136,6 @@ void MainWindow::handleTreeClicked()
     emit statusUpdateMessage(QString("The selected item is: ") + text, 0);
 }
 
-
-void MainWindow::on_actionOpen_File_triggered()
-{
-    emit statusUpdateMessage(QString("Opening File"),0);
-    // Open a file dialog
-    QString fileName = QFileDialog::getOpenFileName(
-        this,
-        tr("Open File"),
-        "C:\\",
-        tr("STL Files(*.stl);;Text Files(*.txt)"));
-
-    if (!fileName.isEmpty()) {
-        emit statusUpdateMessage(QString("File Opened: ") + fileName, 0);
-        // Select an item in the tree view
-        QModelIndex index = ui->treeView->currentIndex();
-        ModelPart* selectedPart = nullptr;
-        if (ui->treeView->selectionModel()->hasSelection()) { // Check if an item is selected
-            selectedPart = static_cast<ModelPart*>(index.internalPointer());
-        }
-        QString visible("true");
-        QColor colour(255, 255, 255);
-
-        ModelPart* newItem = new ModelPart({ fileName, visible, colour });
-        if (selectedPart) { // Check if selectedPart is valid
-            // Append the new item to the selected item
-            selectedPart->appendChild(newItem);
-        }
-        else {
-            // If no item is selected, create a new top-level item
-            QList<QVariant> data = { fileName, visible, colour };
-            QModelIndex parent; // An invalid QModelIndex
-            partList->appendChild(parent, data);
-        }
-        // Update the tree view
-        partList->dataChanged(index, index);
-        // Load the STL file
-        newItem->loadSTL(fileName);
-
-        updateRender();
-    }
-    else {
-        emit statusUpdateMessage(QString("File Open Cancelled"), 0);
-    }
-}
-
-void MainWindow::on_actionOpen_Folder_triggered()
-{
-    emit statusUpdateMessage(QString("Opening Folder"), 0);
-    // Open a directory dialog
-    QString dirName = QFileDialog::getExistingDirectory(
-        this,
-        tr("Open Directory"),
-        "C:\\",
-        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-
-    if(!dirName.isEmpty()){
-        emit statusUpdateMessage(QString("Folder Opened: ") + dirName, 0);
-
-        // Get all STL files in the directory
-        QDir directory(dirName);
-        QStringList stlFiles = directory.entryList(QStringList() << "*.stl" << "*.STL", QDir::Files);
-
-        foreach( QString fileName, stlFiles) {
-            emit statusUpdateMessage(QString("File Opened: ") + fileName, 0);
-            // Select an item in the tree view
-            QModelIndex index = ui->treeView->currentIndex();
-            ModelPart* selectedPart = nullptr;
-            if (ui->treeView->selectionModel()->hasSelection()) { // Check if an item is selected
-                selectedPart = static_cast<ModelPart*>(index.internalPointer());
-            }
-            QString visible("true");
-            QColor colour(255, 255, 255);
-
-            ModelPart* newItem = new ModelPart({ fileName, visible, colour });
-            if (selectedPart) { // Check if selectedPart is valid
-                // Append the new item to the selected item
-                selectedPart->appendChild(newItem);
-            }
-            else {
-                // If no item is selected, create a new top-level item
-                QList<QVariant> data = { fileName, visible, colour };
-                QModelIndex parent; // An invalid QModelIndex
-                partList->appendChild(parent, data);
-            }
-            // Update the tree view
-            partList->dataChanged(index, index);
-            // Load the STL file
-            newItem->loadSTL(directory.filePath(fileName));
-
-        }
-        updateRender();
-	}
-    else {
-		emit statusUpdateMessage(QString("Folder Open Cancelled"), 0);
-	}
-}
-
-void MainWindow::on_actionItem_Options_triggered()
-{
-    // Disconnect the action's signal - otherwise it goes twice
-    disconnect(ui->actionItem_Options, &QAction::triggered, this, &MainWindow::on_actionItem_Options_triggered);
-
-    // Status Bar Message
-    emit statusUpdateMessage(QString("Item Options"),0);
-
-    // Get the selected item
-    QModelIndex index = ui->treeView->currentIndex();
-    ModelPart *selectedPart = static_cast<ModelPart*>(index.internalPointer());
-
-    // Open the dialog with the selected item's data
-    openDialog(selectedPart->getName(), selectedPart->visible(), selectedPart->getColour());
-
-    // Reconnect the action's signal
-    connect(ui->actionItem_Options, &QAction::triggered, this, &MainWindow::on_actionItem_Options_triggered);
-}
-
 // TODO: Make this work
 void MainWindow::on_actionDelete_Item_triggered()
 {
@@ -271,6 +157,140 @@ void MainWindow::on_actionDelete_Item_triggered()
     connect(ui->actionDelete_Item, &QAction::triggered, this, &MainWindow::on_actionDelete_Item_triggered);
 }
 
+// -----------------------------------------------------------------------------------------------
+// File Menus
+
+void MainWindow::on_actionOpen_File_triggered()
+{
+    emit statusUpdateMessage(QString("Opening File"),0);
+
+    // Open a file dialog
+    QString fileName = QFileDialog::getOpenFileName(
+        this,
+        tr("Open File"),
+        "C:\\",
+        tr("STL Files(*.stl);;Text Files(*.txt)"));
+
+    // Check if a file was selected
+    if (!fileName.isEmpty()) {
+        emit statusUpdateMessage(QString("File Opened: ") + fileName, 0);
+        // Get the current index
+        QModelIndex index = ui->treeView->currentIndex();
+
+        // Default values for the new item
+        QString visible("true");
+        QColor colour(255, 255, 255);
+
+        // Create a new item
+        ModelPart* newItem = new ModelPart({ fileName, visible, colour });
+
+        // Check if an item is selected
+        if (ui->treeView->selectionModel()->hasSelection()) {
+             ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+            // Append the new item to the selected item
+            selectedPart->appendChild(newItem);
+        }
+        else {
+            // If no item is selected, create a new top-level item
+            QList<QVariant> data = { fileName, visible, colour };
+            QModelIndex parent; // An invalid QModelIndex so the item is added to the root
+            partList->appendChild(parent, data);
+        }
+
+        // Update the tree view
+        partList->dataChanged(index, index);
+
+        // Load the STL file
+        newItem->loadSTL(fileName);
+
+        updateRender();
+    }
+    else {
+        // If no file was selected
+        emit statusUpdateMessage(QString("File Open Cancelled"), 0);
+    }
+}
+
+void MainWindow::on_actionOpen_Folder_triggered()
+{
+    emit statusUpdateMessage(QString("Opening Folder"), 0);
+
+    // Open a directory dialog
+    QString dirName = QFileDialog::getExistingDirectory(
+        this,
+        tr("Open Directory"),
+        "C:\\",
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+    // Check if a directory was selected
+    if(!dirName.isEmpty()){
+        emit statusUpdateMessage(QString("Folder Opened: ") + dirName, 0);
+
+        // Get all STL files in the directory
+        QDir directory(dirName);
+        QStringList stlFiles = directory.entryList(QStringList() << "*.stl" << "*.STL", QDir::Files);
+
+        foreach( QString fileName, stlFiles) {
+            emit statusUpdateMessage(QString("File Opened: ") + fileName, 0);
+            // Get the current index
+            QModelIndex index = ui->treeView->currentIndex();
+
+            // Default values for the new item
+            QString visible("true");
+            QColor colour(255, 255, 255);
+
+            // Create a new item
+            ModelPart* newItem = new ModelPart({ fileName, visible, colour });
+
+            // Check if an item is selected
+            if (ui->treeView->selectionModel()->hasSelection()) {
+                ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+                // Append the new item to the selected item
+                selectedPart->appendChild(newItem);
+            }
+            else {
+                // If no item is selected, create a new top-level item
+                QList<QVariant> data = { fileName, visible, colour };
+                QModelIndex parent; // An invalid QModelIndex so the item is added to the root
+                partList->appendChild(parent, data);
+            }
+
+            // Update the tree view
+            partList->dataChanged(index, index);
+
+            // Load the STL file
+            newItem->loadSTL(directory.filePath(fileName));
+
+        }
+        updateRender();
+	}
+    // If no directory was selected
+    else {
+		emit statusUpdateMessage(QString("Folder Open Cancelled"), 0);
+	}
+}
+
+// -----------------------------------------------------------------------------------------------
+// Dialog Box
+
+void MainWindow::on_actionItem_Options_triggered()
+{
+    // Disconnect the action's signal - otherwise it goes twice
+    disconnect(ui->actionItem_Options, &QAction::triggered, this, &MainWindow::on_actionItem_Options_triggered);
+
+    // Status Bar Message
+    emit statusUpdateMessage(QString("Item Options"),0);
+
+    // Get the selected item
+    QModelIndex index = ui->treeView->currentIndex();
+    ModelPart *selectedPart = static_cast<ModelPart*>(index.internalPointer());
+
+    // Open the dialog with the selected item's data
+    openDialog(selectedPart->getName(), selectedPart->visible(), selectedPart->getColour());
+
+    // Reconnect the action's signal
+    connect(ui->actionItem_Options, &QAction::triggered, this, &MainWindow::on_actionItem_Options_triggered);
+}
 
 void MainWindow::openDialog(const QString& name, const bool& isVisible, const QColor& colour)
 {
@@ -297,8 +317,11 @@ void MainWindow::receiveDialogData(const QString& name, const bool& visible, con
         QString(" Name: ") + name + 
         QString(" Visible? ") + QString::number(visible), 0);
 
+    // Get the selected item
     QModelIndex index = ui->treeView->currentIndex();
     ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+
+    // Set the selected item's data
     selectedPart->setName(name);
     selectedPart->setVisible(visible);
     selectedPart->setColour(colour);
@@ -306,6 +329,8 @@ void MainWindow::receiveDialogData(const QString& name, const bool& visible, con
     updateRender();
 }
 
+// -----------------------------------------------------------------------------------------------
+// Render Window
 
 void MainWindow::updateRender() {
     renderer->RemoveAllViewProps();
@@ -326,7 +351,6 @@ void MainWindow::updateRenderFromTree(const QModelIndex& index) {
         /* Retrieve actor from selected part and add to renderer */
         vtkSmartPointer<vtkActor> actor = selectedPart->getActor();
         if (actor) {
-
             QColor qcolor = selectedPart->getColour();
             double red = qcolor.redF();
             double green = qcolor.greenF();

@@ -32,31 +32,15 @@ class MainWindow : public QMainWindow
 
 public:
     /**
-     * @brief Constructs a MainWindow object.
+     * @brief Constructor
      * @param parent The parent widget.
      */
     MainWindow(QWidget *parent = nullptr);
 
     /**
-     * @brief Destroys the MainWindow object.
+     * @brief Destructor
      */
     ~MainWindow();
-
-public slots:
-    /**
-     * @brief Handles the button1 click event.
-     */
-    void handleButton1();
-
-    /**
-     * @brief Handles the button2 click event.
-     */
-    void handleButton2();
-
-    /**
-     * @brief Handles the tree clicked event.
-     */
-    void handleTreeClicked();
 
 signals:
     /**
@@ -75,6 +59,21 @@ signals:
 
 private slots:
     /**
+     * @brief Handles the button1 click event.
+     */
+    void handleButton1();
+
+    /**
+     * @brief Handles the button2 click event.
+     */
+    void handleButton2();
+
+    /**
+     * @brief Handles the tree clicked event.
+     */
+    void handleTreeClicked();
+
+    /**
      * @brief Handles the open file event.
      */
     void on_actionOpen_File_triggered();
@@ -85,12 +84,12 @@ private slots:
     void on_actionOpen_Folder_triggered();
 
     /**
-    * @brief Tree options event.
+    * @brief Item Options dropdown event.
     */
     void on_actionItem_Options_triggered();
 
     /**
-    * @brief Delete item event.
+    * @brief Delete item dropdown event.
     */
     void on_actionDelete_Item_triggered();
 

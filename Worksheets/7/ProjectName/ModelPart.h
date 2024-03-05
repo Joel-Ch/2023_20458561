@@ -22,6 +22,9 @@
 #include <vtkColor.h>
 #include <vtkPolyDataMapper.h>
 
+/** ModelPart class
+  * @brief This class represents a part in the model treeview
+   */
 class ModelPart {
 public:
     /** Constructor
@@ -31,7 +34,7 @@ public:
     ModelPart(const QList<QVariant>& data, ModelPart* parent = nullptr);
 
     /** Destructor
-      * Needs to free array of child items
+      * @brief Needs to free array of child items
       */
     ~ModelPart();
 
