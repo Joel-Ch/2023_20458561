@@ -92,8 +92,14 @@ public:
     ModelPart* getRootItem();
 
     /**
+    * @brief Get the index of the root item
+    * @return the index of the root item
+    * @param parent the parent index
+    * @param data the data to append
       */
     QModelIndex appendChild( QModelIndex& parent, const QList<QVariant>& data );
+
+    bool removeRow(int row, const QModelIndex& parent);
 
 
 private:

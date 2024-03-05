@@ -121,6 +121,11 @@ public:
       * @return part name as QString
       */
     QString getName() const;
+
+    /** Remove a child from this item
+      * @param child is the child to remove
+      */
+    void removeChild(ModelPart* child);
 	
 	/** Load STL file
       * @param fileName is the name of the file to load

@@ -110,6 +110,13 @@ QString ModelPart::getName() const {
     return m_itemData.at(0).value<QString>();
 }
 
+void ModelPart::removeChild(ModelPart* child) {
+    int index = m_childItems.indexOf(child);
+    if (index != -1) {
+        m_childItems.removeAt(index);
+    }
+}
+
 
 void ModelPart::loadSTL(QString fileName) {
     // 1. Use the vtkSTLReader class to load the STL file

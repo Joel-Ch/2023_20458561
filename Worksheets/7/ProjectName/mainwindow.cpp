@@ -136,7 +136,6 @@ void MainWindow::handleTreeClicked()
     emit statusUpdateMessage(QString("The selected item is: ") + text, 0);
 }
 
-// TODO: Make this work
 void MainWindow::on_actionDelete_Item_triggered()
 {
     // Disconnect the action's signal - otherwise it goes twice
@@ -150,11 +149,23 @@ void MainWindow::on_actionDelete_Item_triggered()
     ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
 
     // Delete the selected item
-    /*BLANK!*/
-    
+    QModelIndex parentIndex = index.parent();
+    int row = index.row();
+    if (partList->removeRow(row, parentIndex)) {
+		emit statusUpdateMessage(QString("Item Deleted"), 0);
+	}
+    else {
+		emit statusUpdateMessage(QString("Item Not Deleted"), 0);
+	}
 
     // Reconnect the action's signal
     connect(ui->actionDelete_Item, &QAction::triggered, this, &MainWindow::on_actionDelete_Item_triggered);
+
+    // Update the tree view
+    partList->dataChanged(parentIndex, parentIndex);
+
+    // Update the render window
+    updateRender();
 }
 
 // -----------------------------------------------------------------------------------------------
