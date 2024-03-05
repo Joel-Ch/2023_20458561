@@ -393,3 +393,6 @@ void MainWindow::updateRenderFromTree(const QModelIndex& index) {
         updateRenderFromTree(partList->index(i, 0, index));
     }
 }
+
+
+//TODO: Add a select from viewport function
