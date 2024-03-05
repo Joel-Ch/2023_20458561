@@ -85,8 +85,8 @@ int ModelPart::row() const {
     return 0;
 }
 
-void ModelPart::setColour(const QColor& color) {
-    m_itemData[2] = color;
+void ModelPart::setColour(const QColor& colour) {
+    m_itemData[2] = colour;
 }
 
 QColor ModelPart::getColour() const {

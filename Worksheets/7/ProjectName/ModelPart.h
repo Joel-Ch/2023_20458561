@@ -22,19 +22,6 @@
 #include <vtkColor.h>
 #include <vtkPolyDataMapper.h>
 
-/* VTK headers - will be needed when VTK used in next worksheet,
- * commented out for now
- *
- * Note that there are a few function definitions and variables
- * commented out below - this is because you haven't yet installed
- * the VTK library which is needed.
- */
-//#include <vtkSmartPointer.h>
-//#include <vtkMapper.h>
-//#include <vtkActor.h>
-//#include <vtkSTLReader.h>
-//#include <vtkColor.h>
-
 class ModelPart {
 public:
     /** Constructor
@@ -102,9 +89,9 @@ public:
 
 
     /** Set colour
-      * @param _colour is the colour to set
+      * @param colour is the colour to set
       */
-    void setColour(const QColor& color);
+    void setColour(const QColor& colour);
 
     /** Get colour
       * @return colour as QColor
@@ -133,7 +120,7 @@ public:
     QString getName() const;
 	
 	/** Load STL file
-      * @param fileName
+      * @param fileName is the name of the file to load
       */
     void loadSTL(QString fileName);
 
