@@ -75,9 +75,14 @@ signals:
 
 private slots:
     /**
-     * @brief Handles the actionOpen_File triggered event.
+     * @brief Handles the open file event.
      */
     void on_actionOpen_File_triggered();
+
+    /**
+     * @brief Handles the open folder event.
+     */
+    void on_actionOpen_Folder_triggered();
 
     /**
     * @brief Tree options event.
