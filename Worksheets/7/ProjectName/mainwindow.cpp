@@ -174,6 +174,7 @@ void MainWindow::on_actionOpen_File_triggered()
     updateRender();
 }
 
+// TODO: Allow dialog cancelling
 void MainWindow::on_actionOpen_Folder_triggered()
 {
     emit statusUpdateMessage(QString("Opening Folder"), 0);
@@ -314,6 +315,7 @@ void MainWindow::updateRender() {
     renderer->Render();
 }
 
+// TODO: Allow for top level file viewing
 void MainWindow::updateRenderFromTree(const QModelIndex& index) {
     if (index.isValid()) {
         ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
