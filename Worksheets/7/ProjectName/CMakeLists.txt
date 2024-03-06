@@ -29,6 +29,8 @@ set(PROJECT_SOURCES
         dialog.h
         dialog.ui
         dialog.cpp
+        NewTreeView.cpp
+        NewTreeView.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

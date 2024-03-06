@@ -99,7 +99,7 @@ public:
     /** Get colour
       * @return colour as QColor
       */
-    QColor getColour() const;
+    QColor colour() const;
 
     /** Set visible flag
       * @param isVisible sets visible/non-visible
@@ -120,7 +120,7 @@ public:
     /** Get part name
       * @return part name as QString
       */
-    QString getName() const;
+    QString name() const;
 
     /** Remove a child from this item
       * @param child is the child to remove

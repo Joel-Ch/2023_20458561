@@ -88,7 +88,7 @@ void ModelPart::setColour(const QColor& colour) {
     m_itemData[2] = colour;
 }
 
-QColor ModelPart::getColour() const {
+QColor ModelPart::colour() const {
     return m_itemData.at(2).value<QColor>();
 }
 
@@ -106,7 +106,7 @@ void ModelPart::setName(const QString& name) {
     m_itemData[0] = name;
 }
 
-QString ModelPart::getName() const {
+QString ModelPart::name() const {
     return m_itemData.at(0).value<QString>();
 }
 

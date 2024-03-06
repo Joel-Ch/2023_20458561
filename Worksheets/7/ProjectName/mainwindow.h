@@ -5,6 +5,7 @@
 #include "ModelPartList.h"
 #include "ModelPart.h"
 #include "dialog.h"
+#include "NewTreeView.h"
 #include <QMessageBox>
 #include <qfiledialog.h>
 #include <vtkCylinderSource.h>
@@ -70,8 +71,9 @@ private slots:
 
     /**
      * @brief Handles the tree clicked event.
+     * @param index The index of the tree.
      */
-    void handleTreeClicked();
+    void handleTreeClicked(const QModelIndex& index);
 
     /**
      * @brief Handles the open file event.
@@ -120,6 +122,12 @@ private:
     * @param index The index of the tree.
     */
     void updateRenderFromTree(const QModelIndex& index);
+
+    /**
+    * @brief Adds an actor to the renderer.
+    * @param selectedPart The selected part.
+    */
+    void addActorToRenderer(ModelPart* selectedPart);
 
     vtkSmartPointer<vtkRenderer> renderer;
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow;

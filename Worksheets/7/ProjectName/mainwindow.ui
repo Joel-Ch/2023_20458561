@@ -18,7 +18,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QTreeView" name="treeView">
+       <widget class="NewTreeView" name="treeView">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -152,6 +152,11 @@
    <extends>QWidget</extends>
    <header>qvtkopenglnativewidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>NewTreeView</class>
+   <extends>QTreeView</extends>
+   <header>NewTreeView.h</header>
   </customwidget>
  </customwidgets>
  <resources>
