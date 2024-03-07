@@ -66,6 +66,7 @@ void MainWindow::handleTreeClicked(const QModelIndex& index)
     /* Check if an item was clicked */
     if (!index.isValid()) {
         ui->treeView->clearSelection();
+        emit statusUpdateMessage(QString("No item selected"), 0);
         return;
     }
 
@@ -78,6 +79,7 @@ void MainWindow::handleTreeClicked(const QModelIndex& index)
     emit statusUpdateMessage(QString("The selected item is: ") + text, 0);
 }
 
+//TODO: Allow for top level file deletion
 void MainWindow::on_actionDelete_Item_triggered()
 {
     // Disconnect the action's signal - otherwise it goes twice
@@ -183,7 +185,16 @@ void MainWindow::on_actionOpen_Folder_triggered()
         QDir directory(dirName);
         QStringList stlFiles = directory.entryList(QStringList() << "*.stl" << "*.STL", QDir::Files);
 
+        // Create a QProgressDialog
+        QProgressDialog progress("Loading Files...", "Cancel", 0, stlFiles.size(), this);
+        progress.setWindowModality(Qt::WindowModal);
+
+        int i = 0;
         foreach( QString fileName, stlFiles) {
+            // Update the progress dialog
+            progress.setValue(i++);
+            if (progress.wasCanceled())
+                break;
             emit statusUpdateMessage(QString("File Opened: ") + fileName, 0);
             // Get the current index
             QModelIndex index = ui->treeView->currentIndex();
@@ -208,13 +219,15 @@ void MainWindow::on_actionOpen_Folder_triggered()
                 partList->appendChild(parent, data);
             }
 
-            // Update the tree view
-            partList->dataChanged(index, index);
-
             // Load the STL file
             newItem->loadSTL(directory.filePath(fileName));
 
         }
+        progress.setValue(stlFiles.size());
+
+        // Update the tree view
+        partList->dataChanged(QModelIndex(), QModelIndex());
+
         updateRender();
 	}
     // If no directory was selected

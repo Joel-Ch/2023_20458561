@@ -8,6 +8,7 @@
 #include "NewTreeView.h"
 #include <QMessageBox>
 #include <qfiledialog.h>
+#include <qprogressdialog.h>
 #include <vtkCylinderSource.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkPolyDataMapper.h>
