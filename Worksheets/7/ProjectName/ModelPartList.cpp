@@ -152,8 +152,12 @@ bool ModelPartList::removeRow(int row, const QModelIndex& parent)
     beginRemoveRows(parent, row, row);
     ModelPart* parentPart = static_cast<ModelPart*>(parent.internalPointer());
     if (parentPart == nullptr) {
+
+        ModelPart* childPart = rootItem->child(row);
+        rootItem->removeChild(childPart);
+        delete childPart;
         endRemoveRows();
-        return false;
+        return true;
     }
 
     ModelPart* childPart = parentPart->child(row);

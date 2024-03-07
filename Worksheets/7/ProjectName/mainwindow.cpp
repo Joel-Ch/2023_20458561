@@ -79,7 +79,6 @@ void MainWindow::handleTreeClicked(const QModelIndex& index)
     emit statusUpdateMessage(QString("The selected item is: ") + text, 0);
 }
 
-//TODO: Allow for top level file deletion
 void MainWindow::on_actionDelete_Item_triggered()
 {
     // Disconnect the action's signal - otherwise it goes twice
