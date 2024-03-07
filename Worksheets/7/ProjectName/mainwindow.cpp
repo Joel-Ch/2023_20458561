@@ -350,7 +350,6 @@ void MainWindow::updateRenderFromTree(const QModelIndex& index) {
 
 //TODO: Add a viewport highlight function
 //TODO: Add a select from viewport function
-//TODO: Loading symbol (Throbber) when opening files
 
 /*
 List of cool bonus features:
