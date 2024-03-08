@@ -29,7 +29,31 @@ MainWindow::MainWindow(QWidget *parent)
     renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
     ui->vtkWidget->setRenderWindow(renderWindow);
 
-    ///* Add a renderer */
+    // Create a prop picker
+    vtkSmartPointer<vtkPropPicker> PropPicker = vtkSmartPointer<vtkPropPicker>::New();
+
+    // Set the tolerance for the picker
+    //PropPicker->SetTolerance(0.0005);
+
+    // Connect the picker to the render window
+    renderWindow->GetInteractor()->SetPicker(PropPicker);
+
+
+    // Connect the event with a callback function
+    vtkSmartPointer<vtkCallbackCommand> callback = vtkSmartPointer<vtkCallbackCommand>::New();
+
+    // Create a lambda function that captures this and calls onClick
+    auto onClickLambda = [](vtkObject* caller, long unsigned int eventId, void* clientData, void* callData) {
+        static_cast<MainWindow*>(clientData)->onClick(caller, eventId, clientData, callData);
+        };
+
+    // Set the callback to the lambda function
+    callback->SetClientData(this);
+    callback->SetCallback(onClickLambda);
+
+    renderWindow->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, callback);
+
+    // Add a renderer
     renderer = vtkSmartPointer<vtkRenderer>::New();
     renderWindow->AddRenderer(renderer);
 
@@ -109,6 +133,13 @@ void MainWindow::on_actionDelete_Item_triggered()
 
     // Update the render window
     updateRender();
+}
+
+void MainWindow::handleWindowClicked(vtkActor* actor) {
+    emit statusUpdateMessage(QString("Window Clicked"), 0);
+
+    // Highlight the picked actor
+    highlightActor(actor);
 }
 
 // -----------------------------------------------------------------------------------------------
@@ -299,10 +330,11 @@ void MainWindow::receiveDialogData(const QString& name, const bool& visible, con
 
 void MainWindow::updateRender() {
     renderer->RemoveAllViewProps();
-    int rows = partList->rowCount(QModelIndex());
+    /*int rows = partList->rowCount(QModelIndex());
     for (int i = 0; i < rows; i++) {
         updateRenderFromTree(partList->index(i, 0, QModelIndex()));
-    }
+    }*/
+    updateRenderFromTree(partList->index(0, 0, QModelIndex()));
     // Reset Camera
     renderer->ResetCamera();
     renderer->ResetCameraClippingRange();
@@ -345,6 +377,29 @@ void MainWindow::updateRenderFromTree(const QModelIndex& index) {
     int rows = partList->rowCount(index);
     for (int i = 0; i < rows; i++) {
         updateRenderFromTree(partList->index(i, 0, index));
+    }
+}
+
+
+void MainWindow::highlightActor(vtkActor* actor) {
+        if(!actor) return;
+		actor->GetProperty()->SetColor(1.0, 0.0, 0.0); // Set color to red
+        // Force the render window to update
+        renderWindow->Render();
+}
+
+void MainWindow::onClick(vtkObject* caller, long unsigned int eventId, void* clientData, void* callData) {
+    vtkRenderWindowInteractor* interactor = vtkRenderWindowInteractor::SafeDownCast(caller);
+    if (interactor) {
+        int* clickPos = interactor->GetEventPosition();
+
+        vtkSmartPointer<vtkPropPicker> picker = vtkSmartPointer<vtkPropPicker>::New();
+        if (picker->Pick(clickPos[0], clickPos[1], 0, renderer)) {
+            vtkActor* actor = picker->GetActor();
+            if (actor) {
+                highlightActor(actor);
+            }
+        }
     }
 }
 

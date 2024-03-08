@@ -18,6 +18,8 @@
 #include <vtkNew.h>
 #include <vtkCamera.h>
 #include <vtkProperty.h>
+#include <vtkPropPicker.h>
+#include <vtkCallbackCommand.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -96,6 +98,12 @@ private slots:
     */
     void on_actionDelete_Item_triggered();
 
+    /**
+    * @brief Handles the vtk window clicked event.
+    * @param actor The actor that was clicked.
+    */
+    void handleWindowClicked(vtkActor* actor);
+
 private:
     /**
      * @brief Receives dialog data.
@@ -128,7 +136,15 @@ private:
     * @brief Adds an actor to the renderer.
     * @param selectedPart The selected part.
     */
-    void addActorToRenderer(ModelPart* selectedPart);
+    //void addActorToRenderer(ModelPart* selectedPart);
+
+    /**
+    * @brief highlights an actor.
+    * @param actor The actor to highlight.
+    */
+    void highlightActor(vtkActor* actor);
+
+    void onClick(vtkObject* caller, long unsigned int eventId, void* clientData, void* callData);
 
     vtkSmartPointer<vtkRenderer> renderer;
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow;
