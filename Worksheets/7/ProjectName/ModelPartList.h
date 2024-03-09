@@ -99,7 +99,21 @@ public:
       */
     QModelIndex appendChild( QModelIndex& parent, const QList<QVariant>& data );
 
+    /**
+    * @brief Remove a row from the tree
+    * @param row the row to remove
+    * @param parent the parent index
+    * @return true if the row was removed
+    */
     bool removeRow(int row, const QModelIndex& parent);
+
+    /**
+    * @brief Get the index of the root item from the part
+    * @return the index of the root item
+    * @param part the model part
+    * @param parent the parent index
+    */
+    QModelIndex index(ModelPart* part, const QModelIndex& parent);
 
 
 private:

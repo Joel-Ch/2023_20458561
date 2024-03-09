@@ -98,11 +98,6 @@ private slots:
     */
     void on_actionDelete_Item_triggered();
 
-    /**
-    * @brief Handles the vtk window clicked event.
-    * @param actor The actor that was clicked.
-    */
-    void handleWindowClicked(vtkActor* actor);
 
 private:
     /**
@@ -139,15 +134,18 @@ private:
     //void addActorToRenderer(ModelPart* selectedPart);
 
     /**
-    * @brief highlights an actor.
-    * @param actor The actor to highlight.
+    * @brief function called when an actor is clicked.
+    * @param caller The caller object.
+    * @param eventId The event id.
+    * @param clientData The client data.
+    * @param callData The call data.
     */
-    void highlightActor(vtkActor* actor);
-
     void onClick(vtkObject* caller, long unsigned int eventId, void* clientData, void* callData);
 
     vtkSmartPointer<vtkRenderer> renderer;
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow;
+
+    std::unordered_map<vtkActor*, ModelPart*> actorToModelPart;
 
 
     Ui::MainWindow *ui;

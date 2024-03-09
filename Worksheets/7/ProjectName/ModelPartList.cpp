@@ -167,3 +167,20 @@ bool ModelPartList::removeRow(int row, const QModelIndex& parent)
 
     return true;
 }
+
+QModelIndex ModelPartList::index(ModelPart* part, const QModelIndex& parent = QModelIndex()) {
+    for (int i = 0; i < rowCount(parent); ++i) {
+        QModelIndex current = index(i, 0, parent);
+        ModelPart* currentPart = static_cast<ModelPart*>(current.internalPointer());
+        if (currentPart == part) {
+            return current;
+        }
+        if (hasChildren(current)) {
+            QModelIndex found = index(part, current);
+            if (found.isValid()) {
+                return found;
+            }
+        }
+    }
+    return QModelIndex();
+}

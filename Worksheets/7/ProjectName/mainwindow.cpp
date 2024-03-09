@@ -135,13 +135,6 @@ void MainWindow::on_actionDelete_Item_triggered()
     updateRender();
 }
 
-void MainWindow::handleWindowClicked(vtkActor* actor) {
-    emit statusUpdateMessage(QString("Window Clicked"), 0);
-
-    // Highlight the picked actor
-    highlightActor(actor);
-}
-
 // -----------------------------------------------------------------------------------------------
 // File Menus
 
@@ -166,12 +159,15 @@ void MainWindow::on_actionOpen_File_triggered()
         QString visible("true");
         QColor colour(255, 255, 255);
 
-        // Create a new item
-        ModelPart* newItem = new ModelPart({ fileName, visible, colour });
+        // Create a new blank item
+        ModelPart* newItem{};
 
         // Check if an item is selected
         if (ui->treeView->selectionModel()->hasSelection()) {
-             ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+            // initialise the new item with the selected item's data
+            newItem = new ModelPart({ fileName, visible, colour });
+            // Get the selected item
+            ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
             // Append the new item to the selected item
             selectedPart->appendChild(newItem);
         }
@@ -179,7 +175,9 @@ void MainWindow::on_actionOpen_File_triggered()
             // If no item is selected, create a new top-level item
             QList<QVariant> data = { fileName, visible, colour };
             QModelIndex parent; // An invalid QModelIndex so the item is added to the root
-            partList->appendChild(parent, data);
+            QModelIndex newIndex = partList->appendChild(parent, data);
+            // Get the new item
+            newItem = static_cast<ModelPart*>(newIndex.internalPointer());
         }
 
         // Update the tree view
@@ -187,6 +185,9 @@ void MainWindow::on_actionOpen_File_triggered()
 
         // Load the STL file
         newItem->loadSTL(fileName);
+
+        // Add the actor to the map
+        actorToModelPart[newItem->getActor()] = newItem;
 
         updateRender();
     }
@@ -219,6 +220,14 @@ void MainWindow::on_actionOpen_Folder_triggered()
         QProgressDialog progress("Loading Files...", "Cancel", 0, stlFiles.size(), this);
         progress.setWindowModality(Qt::WindowModal);
 
+        QModelIndex parentIndex;
+        if (ui->treeView->selectionModel()->hasSelection()) {
+            parentIndex = ui->treeView->currentIndex();
+        }
+        // Create a new parent item with the folder name
+        QList<QVariant> parentData = { dirName/*, true, QColor(255, 255, 255) */};
+        ModelPart* folderItem = static_cast<ModelPart*>(partList->appendChild(parentIndex, parentData).internalPointer());
+
         int i = 0;
         foreach( QString fileName, stlFiles) {
             // Update the progress dialog
@@ -235,22 +244,15 @@ void MainWindow::on_actionOpen_Folder_triggered()
 
             // Create a new item
             ModelPart* newItem = new ModelPart({ fileName, visible, colour });
-
-            // Check if an item is selected
-            if (ui->treeView->selectionModel()->hasSelection()) {
-                ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
-                // Append the new item to the selected item
-                selectedPart->appendChild(newItem);
-            }
-            else {
-                // If no item is selected, create a new top-level item
-                QList<QVariant> data = { fileName, visible, colour };
-                QModelIndex parent; // An invalid QModelIndex so the item is added to the root
-                partList->appendChild(parent, data);
-            }
+            
+            // Append the new item to the folder
+            folderItem->appendChild(newItem);
 
             // Load the STL file
             newItem->loadSTL(directory.filePath(fileName));
+
+            // Add the actor to the map
+            actorToModelPart[newItem->getActor()] = newItem;
 
         }
         progress.setValue(stlFiles.size());
@@ -341,7 +343,6 @@ void MainWindow::updateRender() {
     renderer->Render();
 }
 
-// TODO: Allow for top level file viewing
 void MainWindow::updateRenderFromTree(const QModelIndex& index) {
     if (index.isValid()) {
         ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
@@ -380,14 +381,6 @@ void MainWindow::updateRenderFromTree(const QModelIndex& index) {
     }
 }
 
-
-void MainWindow::highlightActor(vtkActor* actor) {
-        if(!actor) return;
-		actor->GetProperty()->SetColor(1.0, 0.0, 0.0); // Set color to red
-        // Force the render window to update
-        renderWindow->Render();
-}
-
 void MainWindow::onClick(vtkObject* caller, long unsigned int eventId, void* clientData, void* callData) {
     vtkRenderWindowInteractor* interactor = vtkRenderWindowInteractor::SafeDownCast(caller);
     if (interactor) {
@@ -397,22 +390,28 @@ void MainWindow::onClick(vtkObject* caller, long unsigned int eventId, void* cli
         if (picker->Pick(clickPos[0], clickPos[1], 0, renderer)) {
             vtkActor* actor = picker->GetActor();
             if (actor) {
-                highlightActor(actor);
+                ModelPart* selectedPart = actorToModelPart[actor];
+                emit statusUpdateMessage(QString("Clicked on: ") + selectedPart->name(), 0);
+                QModelIndex index = partList->index(selectedPart, QModelIndex());
+                if (index.isValid()) {
+					ui->treeView->setCurrentIndex(index);
+				}
             }
+        }
+        else {
+            			emit statusUpdateMessage(QString(""), 0);
         }
     }
 }
-
-//TODO: Add a viewport highlight function
-//TODO: Add a select from viewport function
 
 /*
 List of cool bonus features:
 
 - Deselection of items
-- Opening a folder and adding all files in the folder
+- Opening a folder and adding all files in the folder as children of the folder
 - Deleting an item
 - Dialog box has a colour display and a text box for the hex code
 - Dialog box is cancellable
 - Status bar updates with messages
+- Clicking on an actor in the render window selects the corresponding item in the tree view
 */
