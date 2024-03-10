@@ -7,7 +7,7 @@ on:
 
 jobs:
   # The job that will build worksheet 5
-  deploy-worksheet-5:
+  deploy-worksheet-7:
     # Defines the operating system for the virtual computer
     runs-on: ubuntu-latest
 
@@ -23,7 +23,7 @@ jobs:
 
       # Run Doxygen on Worksheet5 folder
       - name: Run Doxygen
-        working-directory: ${{ github.workspace }}/Worksheets/5
+        working-directory: ${{ github.workspace }}/Worksheets/7/ProjectName
         run: doxygen
 
       # Deploy html output from Doxygen to gh-pages branch
@@ -33,6 +33,6 @@ jobs:
           # The branch the action should deploy to.
           branch: gh-pages
           # The folder the action should deploy.
-          folder: ${{ github.workspace }}/Worksheets/5/html
+          folder: ${{ github.workspace }}/Worksheets/7//ProjectName/html
           # The GitHub token
           token: ${{ secrets.GITHUB_TOKEN }}
