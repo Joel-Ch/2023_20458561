@@ -135,6 +135,7 @@ void ModelPart::loadSTL(QString fileName) {
 
 vtkSmartPointer<vtkActor> ModelPart::getActor() const{
     
+
     /* Needs to return a smart pointer to the vtkActor to allow
      * part to be rendered.
      */

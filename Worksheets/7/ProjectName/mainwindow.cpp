@@ -332,11 +332,13 @@ void MainWindow::receiveDialogData(const QString& name, const bool& visible, con
 
 void MainWindow::updateRender() {
     renderer->RemoveAllViewProps();
-    /*int rows = partList->rowCount(QModelIndex());
-    for (int i = 0; i < rows; i++) {
+    for (int i = 0; i < partList->rowCount(QModelIndex()); i++) {
         updateRenderFromTree(partList->index(i, 0, QModelIndex()));
-    }*/
-    updateRenderFromTree(partList->index(0, 0, QModelIndex()));
+    }
+
+    // This line won't render any more than the first item in the list
+    //updateRenderFromTree(partList->index(0, 0, QModelIndex()));
+    
     // Reset Camera
     renderer->ResetCamera();
     renderer->ResetCameraClippingRange();
