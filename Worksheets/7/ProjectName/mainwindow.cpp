@@ -399,7 +399,8 @@ void MainWindow::onClick(vtkObject* caller, long unsigned int eventId, void* cli
             }
         }
         else {
-            			emit statusUpdateMessage(QString(""), 0);
+            emit statusUpdateMessage(QString(""), 0);
+            ui->treeView->clearSelection();
         }
     }
 }

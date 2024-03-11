@@ -1,3 +1,10 @@
+/**
+* @file mainwindow.h
+* 
+* @brief This file contains the definition of the MainWindow class.
+*/
+
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 

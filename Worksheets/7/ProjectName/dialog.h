@@ -1,3 +1,10 @@
+/**
+* @file dialog.h
+* 
+* @brief This file contains the definition of the Dialog class.
+*/
+
+
 #ifndef DIALOG_H
 #define DIALOG_H
 
